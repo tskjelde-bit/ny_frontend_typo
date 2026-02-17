@@ -40,7 +40,7 @@ const Header: React.FC = () => {
             <a 
               key={link.name} 
               href={link.href}
-              className={`text-[13px] font-bold tracking-tight transition-all flex items-center gap-1.5 hover:text-blue-600 ${
+              className={`text-[0.875rem] font-normal transition-all flex items-center gap-1.5 hover:text-blue-600 ${
                 link.active ? 'text-blue-600' : 'text-slate-600'
               }`}
             >
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
         {/* Right side utilities / Mobile Center Button */}
         <div className="flex-1 flex justify-center lg:justify-end items-center gap-2 md:gap-4 px-1">
           {/* Senter-knapp på mobil, høyre-justert på desktop */}
-          <button className="bg-[#0a0f1d] hover:bg-blue-600 text-white px-3 md:px-6 py-1.5 md:py-2.5 rounded-md md:rounded-lg text-[9px] md:text-[13px] font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-black/10 whitespace-nowrap">
+          <button className="bg-[#0a0f1d] hover:bg-blue-600 text-white px-3 md:px-6 py-1.5 md:py-2.5 rounded-md md:rounded-lg text-[0.6875rem] font-semibold uppercase tracking-[0.08em] transition-all active:scale-95 shadow-lg shadow-black/10 whitespace-nowrap">
             Få verdivurdering
           </button>
           
@@ -79,7 +79,7 @@ const Header: React.FC = () => {
               <a 
                 key={link.name} 
                 href={link.href}
-                className={`text-[16px] font-bold py-2 border-b border-slate-50 ${
+                className={`text-[1rem] font-normal py-2 border-b border-slate-50 ${
                   link.active ? 'text-blue-600' : 'text-slate-800'
                 }`}
               >

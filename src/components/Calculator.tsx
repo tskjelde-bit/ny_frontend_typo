@@ -55,10 +55,10 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
       {/* Header for kalkulator */}
       <div className="flex items-start justify-between px-4 pt-4 pb-2 md:p-0 md:mb-8 border-b border-white/5 md:border-none md:bg-transparent shrink-0">
         <div className="flex flex-col text-left">
-          <h1 className="text-xl md:text-[40px] font-manrope font-extrabold text-white tracking-tight mb-0.5 md:mb-1">
+          <h1 className="text-[1.75rem] md:text-[2.25rem] font-bold text-slate-200 tracking-[-0.02em] leading-[1.15] mb-0.5 md:mb-1">
             Verdikalkulator
           </h1>
-          <p className="text-slate-400 font-semibold text-[10px] md:text-[18px] opacity-90">
+          <p className="text-slate-400 font-normal text-[0.8125rem] md:text-[0.9375rem] opacity-90">
             Boligestimat for <span className="text-blue-500">{district.name}</span>
           </p>
         </div>
@@ -78,7 +78,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
             <div className="flex-1 space-y-4 md:space-y-6 flex flex-col justify-start md:justify-center">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest ml-1">Bydel</label>
+                  <label className="text-[0.6875rem] font-semibold text-slate-500 uppercase tracking-[0.08em] ml-1">Bydel</label>
                   <div className="relative">
                     <select
                       value={district.id}
@@ -93,7 +93,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest ml-1">Areal</label>
+                  <label className="text-[0.6875rem] font-semibold text-slate-500 uppercase tracking-[0.08em] ml-1">Areal</label>
                   <div className="flex items-center justify-between bg-[#0a0f1d] border border-slate-800 rounded-xl px-3 py-2.5 focus-within:ring-1 focus-within:ring-blue-600 group">
                     <div className="flex items-center">
                       <input 
@@ -118,7 +118,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
               </div>
 
               <div className="space-y-2">
-                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest ml-1">Boligtype</label>
+                <label className="text-[0.6875rem] font-semibold text-slate-500 uppercase tracking-[0.08em] ml-1">Boligtype</label>
                 <div className="grid grid-cols-4 gap-2">
                   {Object.values(BoligType).map((t) => (
                     <button
@@ -129,20 +129,20 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                       }`}
                     >
                       {getIconForType(t)}
-                      <span className="text-[8px] font-bold uppercase mt-1">{t.slice(0, 3)}</span>
+                      <span className="text-[0.625rem] font-semibold uppercase tracking-[0.06em] mt-1">{t.slice(0, 3)}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest ml-1">Standard</label>
+                <label className="text-[0.6875rem] font-semibold text-slate-500 uppercase tracking-[0.08em] ml-1">Standard</label>
                 <div className="grid grid-cols-3 gap-1 bg-[#0a0f1d] p-1 rounded-xl border border-slate-800">
                   {Object.values(Standard).map((s) => (
                     <button
                       key={s}
                       onClick={() => setStandard(s)}
-                      className={`py-2 rounded-lg text-[8px] font-bold uppercase transition-all ${
+                      className={`py-2 rounded-lg text-[0.625rem] font-semibold uppercase tracking-[0.06em] transition-all ${
                         standard === s ? 'bg-slate-800 text-blue-400' : 'text-slate-500'
                       }`}
                     >
@@ -156,7 +156,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
             <button 
               onClick={handleCalculate}
               disabled={isCalculating}
-              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 text-white font-black py-4 rounded-xl mt-6 flex items-center justify-center gap-3 uppercase tracking-widest text-[11px] transition-all active:scale-95 shadow-xl shadow-blue-900/20"
+              className="w-full bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 text-white font-semibold py-4 rounded-xl mt-6 flex items-center justify-center gap-3 uppercase tracking-[0.08em] text-[0.6875rem] transition-all active:scale-95 shadow-xl shadow-blue-900/20"
             >
               {isCalculating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               {isCalculating ? 'Analyserer...' : 'Beregn verdi'}
@@ -168,26 +168,26 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
             {estimatedValue ? (
               <div className="animate-in fade-in zoom-in-95 flex flex-col h-full justify-between pb-2">
                 <div className="flex-none flex flex-col items-center">
-                  <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-500/20 mb-3 mx-auto">
+                  <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full text-[0.6875rem] font-semibold uppercase tracking-[0.08em] border border-emerald-500/20 mb-3 mx-auto">
                     Beregning klar
                   </div>
                   
                   <div className="text-center mb-4">
-                    <h3 className="text-slate-500 text-[9px] font-bold uppercase tracking-[0.2em] mb-1 opacity-80">Ditt verdiestimat</h3>
-                    <div className="text-4xl md:text-6xl font-manrope font-extrabold text-white tracking-tighter">
+                    <h3 className="text-slate-500 text-[0.6875rem] font-semibold uppercase tracking-[0.08em] mb-1 opacity-80">Ditt verdiestimat</h3>
+                    <div className="text-[2.25rem] md:text-[3rem] font-bold text-slate-200 tracking-[-0.03em] leading-[1.15]">
                       {estimatedValue.toLocaleString('no-NO')}
-                      <span className="ml-1 text-white">kr</span>
+                      <span className="ml-1 text-slate-200 text-[1.35rem] md:text-[1.8rem] font-normal">kr</span>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto w-full mb-4">
                      <div className="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                        <div className="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">Pris/m²</div>
-                        <div className="text-white font-manrope font-extrabold text-sm">{Math.round(estimatedValue / area).toLocaleString('no-NO')}</div>
+                        <div className="text-slate-500 text-[0.625rem] font-semibold uppercase tracking-[0.06em] mb-0.5">Pris/m²</div>
+                        <div className="text-slate-200 font-bold text-[0.875rem]">{Math.round(estimatedValue / area).toLocaleString('no-NO')}</div>
                      </div>
                      <div className="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                        <div className="text-slate-500 text-[8px] font-bold uppercase tracking-widest mb-0.5">Trend</div>
-                        <div className="text-emerald-400 font-manrope font-extrabold text-sm flex items-center justify-center gap-1">
+                        <div className="text-slate-500 text-[0.625rem] font-semibold uppercase tracking-[0.06em] mb-0.5">Trend</div>
+                        <div className="text-emerald-400 font-bold text-[0.875rem] flex items-center justify-center gap-1">
                           <TrendingUp className="w-3.5 h-3.5" />
                           +{district.priceChange}%
                         </div>
@@ -196,8 +196,8 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
 
                   <div className="w-full space-y-4 mb-2">
                     <div className="text-center">
-                      <h4 className="text-white font-manrope font-extrabold text-base md:text-xl uppercase tracking-tight mb-1">TRENGER DU EN VERDIVURDERING?</h4>
-                      <p className="text-slate-400 text-[11px] font-medium leading-relaxed max-w-[280px] mx-auto opacity-90 px-2">
+                      <h4 className="text-slate-200 font-bold text-[1.0625rem] md:text-[1.375rem] tracking-[-0.01em] leading-snug mb-1">Trenger du en verdivurdering?</h4>
+                      <p className="text-slate-400 text-[0.8125rem] font-normal leading-relaxed max-w-[280px] mx-auto opacity-90 px-2">
                         Jeg hjelper deg med en kostnadsfri e-takst av boligen din
                       </p>
                     </div>
@@ -209,7 +209,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                           'Motta tips og råd',
                           'Sett av 30 – 60 minutter'
                         ].map((item, i) => (
-                          <li key={i} className="flex items-center gap-3 text-slate-200 text-[10px] font-bold uppercase tracking-widest">
+                          <li key={i} className="flex items-center gap-3 text-slate-200 text-[0.6875rem] font-semibold uppercase tracking-[0.08em]">
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                             {item}
                           </li>
@@ -220,13 +220,13 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                 </div>
 
                 <div className="space-y-2 mt-auto">
-                  <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-4 rounded-xl flex items-center justify-center gap-2 uppercase tracking-[0.1em] text-[11px] transition-all shadow-xl shadow-emerald-900/20 active:scale-[0.98]">
+                  <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 uppercase tracking-[0.08em] text-[0.6875rem] transition-all shadow-xl shadow-emerald-900/20 active:scale-[0.98]">
                     Få en presis verdivurdering
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={handleReset}
-                    className="w-full text-slate-500 hover:text-white text-[9px] font-bold uppercase tracking-widest flex items-center justify-center gap-2 py-1 transition-colors"
+                    className="w-full text-slate-500 hover:text-white text-[0.6875rem] font-semibold uppercase tracking-[0.08em] flex items-center justify-center gap-2 py-1 transition-colors"
                   >
                     <ChevronLeft className="w-3 h-3" />
                     Endre detaljer
@@ -238,8 +238,8 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                 <div className="w-16 h-16 bg-slate-800/40 rounded-3xl flex items-center justify-center border border-slate-800/60 mb-6">
                   <CalcIcon className="w-8 h-8 text-slate-700" />
                 </div>
-                <h4 className="text-slate-400 font-bold text-lg tracking-tight mb-2 uppercase">Resultat</h4>
-                <p className="text-slate-600 text-sm leading-relaxed text-center font-medium">
+                <h4 className="text-slate-500 font-semibold text-[0.6875rem] tracking-[0.08em] mb-2 uppercase">Resultat</h4>
+                <p className="text-slate-500 text-[0.8125rem] leading-relaxed text-center font-normal">
                   Verdiestimatet ditt dukker opp her når du har fylt ut detaljene.
                 </p>
               </div>

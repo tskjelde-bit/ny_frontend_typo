@@ -55,10 +55,10 @@ const App: React.FC = () => {
 
           {/* Title Section */}
           <div className={`pt-2 md:pt-10 pb-2 md:pb-6 shrink-0 text-left px-4 md:px-0 ${showCalculator ? 'hidden md:block' : 'block'}`}>
-            <h1 className="text-2xl md:text-5xl font-manrope font-extrabold text-white tracking-tight mb-0.5 md:mb-2">
+            <h1 className="text-[1.75rem] md:text-[2.25rem] font-bold text-slate-200 tracking-[-0.02em] leading-[1.15] mb-0.5 md:mb-2">
               Boligmarkedet i <span className="text-blue-500">{selectedDistrict?.name || 'Oslo'}</span>
             </h1>
-            <p className="text-slate-400 font-semibold text-[14px] md:text-[1.35rem] opacity-90 leading-snug whitespace-nowrap overflow-hidden text-ellipsis uppercase">
+            <p className="text-slate-400 font-normal text-[0.875rem] md:text-[0.9375rem] opacity-90 leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
               {selectedDistrict?.description || 'Er det kjøper eller selgers marked i Oslo nå?'}
             </p>
           </div>
@@ -117,7 +117,7 @@ const App: React.FC = () => {
                             setActiveTileLayer(key);
                             setIsLayerMenuOpen(false);
                           }}
-                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                          className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.08em] transition-colors ${
                             activeTileLayer === key
                               ? 'bg-blue-600 text-white'
                               : 'text-slate-700 hover:bg-slate-50'

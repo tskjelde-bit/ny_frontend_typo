@@ -128,7 +128,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
             <StatItem label="Prisendring" value={`+${data.priceChange}%`} color={osloTextColor} labelColor={osloTextColor} center small />
             <StatItem
               label="Salgstid"
-              value={<>{data.avgDaysOnMarket} <span className="md:inline hidden">dager</span><span className="md:hidden inline">D</span></>}
+              value={<>{data.avgDaysOnMarket} dager</>}
               color={osloTextColor}
               labelColor={osloTextColor}
               center
@@ -150,7 +150,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
               <StatItem label="Prisendring" value={`+${data.priceChange}%`} color={getTrendColor(data.priceChange)} small center />
               <StatItem
                 label="Salgstid"
-                value={<>{data.avgDaysOnMarket} <span className="md:inline hidden">dager</span><span className="md:hidden inline">D</span></>}
+                value={<>{data.avgDaysOnMarket} dager</>}
                 color={getDaysColor(data.avgDaysOnMarket)}
                 small
                 center
@@ -161,7 +161,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
         </div>
         <button 
           onClick={onOpenCalculator}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 uppercase tracking-[0.2em] transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[10px] md:text-sm"
+          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[0.8125rem] md:text-[1rem]"
         >
           Hva er boligen din på {data.name} verdt?
         </button>
@@ -217,7 +217,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
 
       <button 
         onClick={onOpenCalculator}
-        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 md:py-4 uppercase tracking-[0.2em] transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[10px] md:text-sm"
+        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 md:py-4 transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[0.8125rem] md:text-[1rem]"
       >
         Hva er boligen din på {data.name} verdt?
       </button>
@@ -227,8 +227,8 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
 
 const StatItem = ({ label, value, color, small, center, labelColor = "text-slate-500" }: { label: string, value: React.ReactNode, color: string, small?: boolean, center?: boolean, labelColor?: string }) => (
   <div className={center ? 'text-center' : 'text-left'}>
-    <div className={`${color} font-black ${small ? 'text-xl md:text-3xl' : 'text-2xl md:text-5xl'} tracking-tighter mb-0.5 md:mb-1 transition-colors duration-500`}>{value}</div>
-    <div className={`${labelColor} text-[8px] md:text-[10px] font-bold tracking-[0.15em] leading-tight uppercase`}>{label}</div>
+    <div className={`${color} font-bold ${small ? 'text-[1.5rem] md:text-[2rem]' : 'text-2xl md:text-5xl'} tracking-[-0.03em] mb-0.5 md:mb-1 transition-colors duration-500`}>{value}</div>
+    <div className={`${labelColor} text-[0.625rem] md:text-[0.6875rem] font-semibold tracking-[0.08em] leading-tight uppercase`}>{label}</div>
   </div>
 );
 
@@ -237,11 +237,11 @@ const StatBox = ({ title, mobileValue, desktopValue, colorClass, icon, desktopDe
     <div className="flex items-start justify-between mb-0 md:mb-3">
       {mobileValue && desktopValue ? (
         <>
-          <div className={`${colorClass} font-black text-lg md:text-2xl tracking-tighter transition-colors duration-500 md:hidden`}>{mobileValue}</div>
-          <div className={`${colorClass} font-black text-lg md:text-2xl tracking-tighter transition-colors duration-500 hidden md:block`}>{desktopValue}</div>
+          <div className={`${colorClass} font-bold text-[1.5rem] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500 md:hidden`}>{mobileValue}</div>
+          <div className={`${colorClass} font-bold text-[1.5rem] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500 hidden md:block`}>{desktopValue}</div>
         </>
       ) : (
-        <div className={`${colorClass} font-black text-lg md:text-2xl tracking-tighter transition-colors duration-500`}>{mobileValue || desktopValue}</div>
+        <div className={`${colorClass} font-bold text-[1.5rem] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500`}>{mobileValue || desktopValue}</div>
       )}
       <div className={`${colorClass} opacity-70`}>
         {React.cloneElement(icon as React.ReactElement<any>, { size: 14, strokeWidth: 2.5 })}
@@ -249,11 +249,11 @@ const StatBox = ({ title, mobileValue, desktopValue, colorClass, icon, desktopDe
     </div>
     <div className="space-y-0 md:space-y-1">
       {/* Oppdatert label til uppercase og økt tracking */}
-      <h4 className="text-[11px] md:text-[10px] font-bold text-slate-500 tracking-[0.15em] uppercase">{title}</h4>
-      <p className="hidden md:block text-[12px] text-slate-400 leading-tight font-medium opacity-90 line-clamp-2">
+      <h4 className="text-[0.625rem] md:text-[0.6875rem] font-semibold text-slate-500 tracking-[0.08em] uppercase">{title}</h4>
+      <p className="hidden md:block text-[0.8125rem] text-slate-400 leading-snug font-normal opacity-90 line-clamp-2">
         {desktopDesc}
       </p>
-      <p className="block md:hidden text-[11px] text-slate-400 leading-[1.25] font-medium line-clamp-2">
+      <p className="block md:hidden text-[0.75rem] text-slate-400 leading-snug font-normal line-clamp-2">
         {mobileDesc}
       </p>
     </div>
