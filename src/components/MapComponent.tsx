@@ -3,19 +3,6 @@ import React, { useEffect, useRef, useCallback, forwardRef, useImperativeHandle 
 import { Property, DistrictInfo } from '../types';
 import L from 'leaflet';
 
-// Choropleth color scale based on priceChange (%)
-const CHOROPLETH_SCALE: [number, string][] = [
-  [0, '#93C5FD'],
-  [2, '#60A5FA'],
-  [3, '#3B82F6'],
-  [4, '#2563EB'],
-  [5, '#1D4ED8'],
-  [6, '#1E40AF'],
-];
-const CHOROPLETH_MAX = '#1E3A8A';
-const SELECTED_COLOR = '#2D4B5F';
-const DEFAULT_COLOR = '#F1F5F9';
-
 // Tile layer definitions — all Mapbox
 export type TileLayerKey = 'blue' | 'snapmap' | 'dark';
 
@@ -43,70 +30,41 @@ export const TILE_LAYERS: Record<TileLayerKey, { name: string; url: string; opti
 const MAPBOX_DARK_STYLE_URL = `https://api.mapbox.com/styles/v1/drskjelde/cmlqhxlot000401sdfh3a2ktd/tiles/{z}/{x}/{y}@2x?access_token=${MAPBOX_TOKEN}`;
 const MAPBOX_DARK_STYLE_OPTIONS: L.TileLayerOptions = { maxZoom: 19, tileSize: 512, zoomOffset: -1 };
 
-// Per-layer style config
-const LAYER_STYLES: Record<TileLayerKey, {
-  showOverlay: boolean;          // show GeoJSON polygons (false = map style handles borders)
-  showLabels: boolean;           // show our district name labels
-  showChoropleth: boolean;       // fill areas with choropleth colors
-  borderColor: string;
-  borderWeight: number;
-  borderOpacity: number;
-  selectedFillColor: string;
-  hoverFillOpacity: number;
-  labelColor: string;
-  labelSelectedColor: string;
-  labelShadow: string;
-  labelSelectedShadow: string;
-}> = {
-  blue: {
-    showOverlay: true,
-    showLabels: true,
-    showChoropleth: true,
-    borderColor: '#FFFFFF',
-    borderWeight: 1.5,
-    borderOpacity: 0.8,
-    selectedFillColor: SELECTED_COLOR,
-    hoverFillOpacity: 0.55,
-    labelColor: '#1E3A50',
-    labelSelectedColor: '#FFFFFF',
-    labelShadow: '0 0 4px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)',
-    labelSelectedShadow: '0 1px 3px rgba(0,0,0,0.4)',
-  },
-  snapmap: {
-    showOverlay: false,           // Mapbox style has its own borders
-    showLabels: true,             // Our district labels on top
-    showChoropleth: false,
-    borderColor: 'transparent',
-    borderWeight: 0,
-    borderOpacity: 0,
-    selectedFillColor: 'transparent',
-    hoverFillOpacity: 0,
-    labelColor: '#1E3A50',
-    labelSelectedColor: '#FFFFFF',
-    labelShadow: '0 0 4px rgba(255,255,255,0.9), 0 0 2px rgba(255,255,255,0.9)',
-    labelSelectedShadow: '0 1px 3px rgba(0,0,0,0.4)',
-  },
-  dark: {
-    showOverlay: true,
-    showLabels: true,
-    showChoropleth: false,
-    borderColor: 'rgba(255,255,255,0.25)',
-    borderWeight: 1,
-    borderOpacity: 1,
-    selectedFillColor: 'rgba(59,130,246,0.35)',
-    hoverFillOpacity: 0.25,
-    labelColor: 'rgba(255,255,255,0.8)',
-    labelSelectedColor: '#FFFFFF',
-    labelShadow: '0 1px 3px rgba(0,0,0,0.8)',
-    labelSelectedShadow: '0 1px 4px rgba(0,0,0,0.9)',
-  },
-};
+// Theme-aware style helpers
+function getThemeStyles(dark: boolean) {
+  return {
+    border: {
+      color: dark ? 'rgba(255,255,255,0.15)' : 'rgba(15,23,42,0.2)',
+      weight: 1,
+      selectedColor: dark ? '#3b82f6' : '#2563eb',
+      selectedWeight: 2,
+    },
+    fill: {
+      default: dark ? 'rgba(59,130,246,0.05)' : 'rgba(37,99,235,0.03)',
+      hover: dark ? 'rgba(59,130,246,0.12)' : 'rgba(37,99,235,0.08)',
+      selected: dark ? 'rgba(59,130,246,0.2)' : 'rgba(37,99,235,0.15)',
+    },
+    label: {
+      color: dark ? '#f1f5f9' : '#0f172a',
+      shadow: dark
+        ? '0 1px 3px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.5)'
+        : '0 1px 2px rgba(255,255,255,0.9), 0 0 4px rgba(255,255,255,0.7)',
+      selectedColor: dark ? '#3b82f6' : '#2563eb',
+    },
+    // Dimming for non-selected when a district is selected
+    dim: {
+      labelOpacity: 0.5,
+      borderOpacity: 0.3,
+      fillOpacity: 0.2,
+    },
+  };
+}
 
-// Desktop/tablet settings (more zoomed in to show details)
+// Desktop/tablet settings
 const DEFAULT_CENTER: L.LatLngExpression = [59.92, 10.76];
 const DEFAULT_ZOOM = 11.5;
 
-// Mobile settings (more zoomed out to show all districts)
+// Mobile settings
 const MOBILE_CENTER: L.LatLngExpression = [59.91, 10.76];
 const MOBILE_ZOOM = 10.6;
 
@@ -122,20 +80,6 @@ export interface MapComponentHandle {
   zoomOut: () => void;
   resetView: () => void;
   setTileLayer: (key: TileLayerKey) => void;
-}
-
-function getChoroplethColor(priceChange: number): string {
-  for (let i = CHOROPLETH_SCALE.length - 1; i >= 0; i--) {
-    if (priceChange >= CHOROPLETH_SCALE[i][0]) return CHOROPLETH_SCALE[i][1];
-  }
-  return CHOROPLETH_SCALE[0][1];
-}
-
-function getHoverColor(priceChange: number): string {
-  const natural = getChoroplethColor(priceChange);
-  const idx = CHOROPLETH_SCALE.findIndex(([, c]) => c === natural);
-  if (idx < CHOROPLETH_SCALE.length - 1) return CHOROPLETH_SCALE[idx + 1][1];
-  return CHOROPLETH_MAX;
 }
 
 interface MapComponentProps {
@@ -165,8 +109,8 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
   const labelDataRef = useRef<any[]>([]);
   const dataLoadedRef = useRef(false);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
-  const userTileKeyRef = useRef<TileLayerKey>('blue');   // what the user picked in layer menu
-  const activeTileKeyRef = useRef<TileLayerKey>('blue'); // actual visual style (may differ in dark mode)
+  const userTileKeyRef = useRef<TileLayerKey>('blue');
+  const activeTileKeyRef = useRef<TileLayerKey>('blue');
 
   // Stable refs for callbacks
   const districtsRef = useRef(districts);
@@ -175,6 +119,8 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
   selectedDistrictRef.current = selectedDistrict;
   const onDistrictSelectRef = useRef(onDistrictSelect);
   onDistrictSelectRef.current = onDistrictSelect;
+  const isDarkRef = useRef(isDark);
+  isDarkRef.current = isDark;
 
   const findDistrictByName = useCallback((name: string): DistrictInfo | undefined => {
     return districtsRef.current.find(d => d.name === name);
@@ -185,84 +131,67 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     const geoJsonData = geoJsonDataRef.current;
     if (!map || !geoJsonData) return;
 
-    // Remove previous layer
     if (geoJsonLayerRef.current) {
       map.removeLayer(geoJsonLayerRef.current);
       geoJsonLayerRef.current = null;
     }
 
     const selected = selectedDistrictRef.current;
-    const style = LAYER_STYLES[activeTileKeyRef.current];
+    const dark = !!isDarkRef.current;
+    const ts = getThemeStyles(dark);
+    const isSnapmap = activeTileKeyRef.current === 'snapmap';
 
     const layer = L.geoJSON(geoJsonData, {
       style: (feature) => {
+        if (isSnapmap) {
+          return { fillColor: 'transparent', fillOpacity: 0, weight: 0, color: 'transparent', opacity: 0 };
+        }
+
         const name = feature?.properties?.BYDELSNAVN;
         const district = findDistrictByName(name);
+        const isSelected = district && selected && district.name === selected.name;
+        const hasSelection = !!selected;
 
-        if (!style.showOverlay) {
-          // Snapmap: invisible interaction layer (Mapbox style handles visuals)
+        if (isSelected) {
           return {
-            fillColor: 'transparent',
-            fillOpacity: 0,
-            weight: 0,
-            color: 'transparent',
-            opacity: 0,
-          };
-        } else if (style.showChoropleth) {
-          // Blue mode: full choropleth fill
-          let fillColor = DEFAULT_COLOR;
-          if (district) {
-            if (selected && district.name === selected.name) {
-              fillColor = style.selectedFillColor;
-            } else {
-              fillColor = getChoroplethColor(district.priceChange);
-            }
-          }
-          return {
-            fillColor,
-            fillOpacity: 0.4,
-            weight: style.borderWeight,
-            color: style.borderColor,
-            opacity: style.borderOpacity,
-          };
-        } else {
-          // Dark: transparent fill, borders only
-          const isSelected = district && selected && district.name === selected.name;
-          return {
-            fillColor: isSelected ? style.selectedFillColor : 'transparent',
-            fillOpacity: isSelected ? 0.4 : 0,
-            weight: style.borderWeight,
-            color: style.borderColor,
-            opacity: style.borderOpacity,
+            fillColor: ts.fill.selected,
+            fillOpacity: 1,
+            weight: ts.border.selectedWeight,
+            color: ts.border.selectedColor,
+            opacity: 1,
           };
         }
+
+        return {
+          fillColor: ts.fill.default,
+          fillOpacity: hasSelection ? ts.dim.fillOpacity : 1,
+          weight: ts.border.weight,
+          color: ts.border.color,
+          opacity: hasSelection ? ts.dim.borderOpacity : 1,
+        };
       },
       onEachFeature: (feature, layer) => {
         const name = feature?.properties?.BYDELSNAVN;
         const district = findDistrictByName(name);
-
         if (!district) return;
 
         layer.on({
           mouseover: (e: L.LeafletMouseEvent) => {
             const target = e.target;
             const sel = selectedDistrictRef.current;
-            const st = LAYER_STYLES[activeTileKeyRef.current];
+            const dark = !!isDarkRef.current;
+            const ts = getThemeStyles(dark);
+
             if (!sel || district.name !== sel.name) {
-              if (st.showOverlay) {
-                if (st.showChoropleth) {
-                  target.setStyle({
-                    fillColor: getHoverColor(district.priceChange),
-                    fillOpacity: st.hoverFillOpacity,
-                  });
-                } else {
-                  target.setStyle({
-                    fillColor: getChoroplethColor(district.priceChange),
-                    fillOpacity: st.hoverFillOpacity,
-                  });
-                }
+              if (!isSnapmap) {
+                target.setStyle({
+                  fillColor: ts.fill.hover,
+                  fillOpacity: 1,
+                  weight: ts.border.selectedWeight,
+                  color: ts.border.selectedColor,
+                  opacity: 1,
+                });
               }
-              // Snapmap: no hover style, but still need cursor
               target.bringToFront();
             }
             const el = (target as any)._path;
@@ -289,46 +218,57 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     const labels = labelDataRef.current;
     if (!map || labels.length === 0) return;
 
-    // Remove previous labels
     labelMarkersRef.current.forEach(m => m.remove());
     labelMarkersRef.current = [];
 
-    const style = LAYER_STYLES[activeTileKeyRef.current];
-
-    // Skip labels if disabled for this layer
-    if (!style.showLabels) return;
-
+    const dark = !!isDarkRef.current;
+    const ts = getThemeStyles(dark);
     const selected = selectedDistrictRef.current;
+    const hasSelection = !!selected;
+    const isMobile = window.innerWidth < 768;
 
     labels.forEach((feature: any) => {
       const name = feature.properties.BYDELSNAVN;
       const district = findDistrictByName(name);
       if (!district) return;
+      if (district.name === 'Oslo (Totalt)') return;
 
       const coords = feature.geometry.coordinates;
       const isSelected = selected && district.name === selected.name;
+      const isDimmed = hasSelection && !isSelected;
+
+      const fontSize = isSelected
+        ? (isMobile ? '0.6875rem' : '0.75rem')
+        : (isMobile ? '0.625rem' : '0.6875rem');
+      const fontWeight = isSelected ? '700' : '600';
+      const letterSpacing = isMobile ? '0.06em' : '0.08em';
+      const color = isSelected ? ts.label.selectedColor : ts.label.color;
+      const shadow = ts.label.shadow;
+      const opacity = isDimmed ? ts.dim.labelOpacity : 1;
 
       const icon = L.divIcon({
         className: 'district-choropleth-label',
         html: `<div style="
-          font-size: 0.6rem;
-          font-weight: 800;
+          font-size: ${fontSize};
+          font-weight: ${fontWeight};
           text-transform: uppercase;
-          letter-spacing: 0.08em;
+          letter-spacing: ${letterSpacing};
           white-space: nowrap;
-          color: ${isSelected ? style.labelSelectedColor : style.labelColor};
-          text-shadow: ${isSelected ? style.labelSelectedShadow : style.labelShadow};
+          color: ${color};
+          text-shadow: ${shadow};
+          opacity: ${opacity};
           pointer-events: auto;
           cursor: pointer;
           user-select: none;
-        ">${district.name === 'Oslo (Totalt)' ? '' : district.name}</div>`,
+          transition: opacity 0.3s ease;
+        ">${district.name}</div>`,
         iconSize: [0, 0],
         iconAnchor: [0, 0],
       });
 
       const marker = L.marker([coords[1], coords[0]], {
         icon,
-        zIndexOffset: 1000,
+        zIndexOffset: isSelected ? 2000 : 1000,
         interactive: true,
       })
         .addTo(map)
@@ -341,7 +281,6 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     });
   }, [findDistrictByName]);
 
-  // Expose controls to parent
   useImperativeHandle(ref, () => ({
     zoomIn: () => { mapRef.current?.zoomIn(); },
     zoomOut: () => { mapRef.current?.zoomOut(); },
@@ -359,7 +298,6 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
       activeTileKeyRef.current = key;
       const def = TILE_LAYERS[key];
       tileLayerRef.current = L.tileLayer(def.url, def.options).addTo(map);
-      // Re-render GeoJSON + labels with new style
       if (dataLoadedRef.current) {
         renderGeoJson();
         renderLabels();
@@ -377,10 +315,9 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
       attributionControl: false,
     }).setView(view.center, view.zoom);
 
-    // Default tile layer — use dark Mapbox style if isDark, otherwise blue
     if (isDark) {
       tileLayerRef.current = L.tileLayer(MAPBOX_DARK_STYLE_URL, MAPBOX_DARK_STYLE_OPTIONS).addTo(map);
-      activeTileKeyRef.current = 'blue'; // still logically 'blue' for the layer menu
+      activeTileKeyRef.current = 'dark';
     } else {
       const def = TILE_LAYERS.blue;
       tileLayerRef.current = L.tileLayer(def.url, def.options).addTo(map);
@@ -392,8 +329,6 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     const handleResize = () => {
       if (mapRef.current) {
         mapRef.current.invalidateSize();
-
-        // Check if we crossed the mobile/desktop breakpoint
         const currentIsMobile = window.innerWidth < 768;
         if (currentIsMobile !== lastIsMobile) {
           lastIsMobile = currentIsMobile;
@@ -404,7 +339,6 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     };
     window.addEventListener('resize', handleResize);
 
-    // Load GeoJSON data
     const basePath = import.meta.env.BASE_URL || '/';
     Promise.all([
       fetch(`${basePath}oslo_bydeler.geojson`).then(r => r.json()),
@@ -426,25 +360,23 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Switch between custom Mapbox dark/light tiles when isDark changes
+  // Switch between dark/light tiles when isDark changes
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
 
-    // Only auto-switch when the user has 'blue' selected in the layer menu
     if (userTileKeyRef.current !== 'blue') return;
 
-    // Swap tile layer
     if (tileLayerRef.current) {
       map.removeLayer(tileLayerRef.current);
     }
     if (isDark) {
       tileLayerRef.current = L.tileLayer(MAPBOX_DARK_STYLE_URL, MAPBOX_DARK_STYLE_OPTIONS).addTo(map);
-      activeTileKeyRef.current = 'dark'; // use dark overlay styles (transparent fill, borders only)
+      activeTileKeyRef.current = 'dark';
     } else {
       const def = TILE_LAYERS.blue;
       tileLayerRef.current = L.tileLayer(def.url, def.options).addTo(map);
-      activeTileKeyRef.current = 'blue'; // use blue overlay styles (choropleth fill)
+      activeTileKeyRef.current = 'blue';
     }
 
     if (dataLoadedRef.current) {
