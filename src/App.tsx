@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { OSLO_DISTRICTS, getPreposisjon } from '@/constants';
 import { DistrictInfo } from '@/types';
 import MapComponent, { MapComponentHandle, TileLayerKey, TILE_LAYERS } from '@/components/MapComponent';
@@ -15,6 +15,7 @@ const App: React.FC = () => {
   const [activeTileLayer, setActiveTileLayer] = useState<TileLayerKey>('blue');
   const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
   const mapComponentRef = useRef<MapComponentHandle>(null);
+  const heroTitleRef = useRef<HTMLHeadingElement>(null);
 
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('theme');
@@ -32,6 +33,33 @@ const App: React.FC = () => {
   }, []);
 
   const selectedDistrict = OSLO_DISTRICTS.find(d => d.id === selectedDistrictId) || null;
+
+  const fitHeroTitle = useCallback(() => {
+    const el = heroTitleRef.current;
+    if (!el) return;
+    const maxSize = 28; // 1.75rem mobile
+    const minSize = 20;
+    el.style.fontSize = '';
+    el.style.whiteSpace = 'nowrap';
+    if (window.innerWidth >= 768) return; // only on mobile
+    el.style.fontSize = maxSize + 'px';
+    let currentSize = maxSize;
+    while (el.scrollWidth > el.clientWidth && currentSize > minSize) {
+      currentSize -= 0.5;
+      el.style.fontSize = currentSize + 'px';
+    }
+  }, []);
+
+  useEffect(() => {
+    requestAnimationFrame(fitHeroTitle);
+  }, [selectedDistrictId, fitHeroTitle]);
+
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    const onResize = () => { clearTimeout(timer); timer = setTimeout(fitHeroTitle, 100); };
+    window.addEventListener('resize', onResize);
+    return () => { window.removeEventListener('resize', onResize); clearTimeout(timer); };
+  }, [fitHeroTitle]);
 
   const handleDistrictSelect = (district: DistrictInfo) => {
     setSelectedDistrictId(district.id);
@@ -70,7 +98,7 @@ const App: React.FC = () => {
 
           {/* Title Section */}
           <div className={`pt-2 md:pt-10 pb-2 md:pb-6 shrink-0 text-left px-4 md:px-0 ${showCalculator ? 'hidden md:block' : 'block'}`}>
-            <h1 className="text-[1.75rem] md:text-[2.25rem] font-bold text-tx-primary tracking-[-0.02em] leading-[1.15] mb-0.5 md:mb-2">
+            <h1 ref={heroTitleRef} className="text-[1.75rem] md:text-[2.25rem] font-bold text-tx-primary tracking-[-0.02em] leading-[1.15] mb-0.5 md:mb-2">
               Boligmarkedet {getPreposisjon(selectedDistrict?.name)} <span className="text-accent">{selectedDistrict?.name || 'Oslo'}</span>
             </h1>
             <p className="text-tx-muted font-normal text-[0.875rem] md:text-[0.9375rem] opacity-90 leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
