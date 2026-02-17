@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { OSLO_DISTRICTS } from '@/constants';
 import { DistrictInfo } from '@/types';
 import MapComponent, { MapComponentHandle, TileLayerKey, TILE_LAYERS } from '@/components/MapComponent';
@@ -15,6 +15,21 @@ const App: React.FC = () => {
   const [activeTileLayer, setActiveTileLayer] = useState<TileLayerKey>('blue');
   const [isLayerMenuOpen, setIsLayerMenuOpen] = useState(false);
   const mapComponentRef = useRef<MapComponentHandle>(null);
+
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved === 'dark';
+    return !window.matchMedia('(prefers-color-scheme: light)').matches;
+  });
+
+  const toggleTheme = useCallback(() => {
+    setIsDark(prev => {
+      const next = !prev;
+      document.documentElement.classList.toggle('dark', next);
+      localStorage.setItem('theme', next ? 'dark' : 'light');
+      return next;
+    });
+  }, []);
 
   const selectedDistrict = OSLO_DISTRICTS.find(d => d.id === selectedDistrictId) || null;
 
@@ -46,8 +61,8 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full bg-[#0a0f1d] text-slate-100 font-sans overflow-hidden">
-      <Header />
+    <div className="flex flex-col h-[100dvh] w-full bg-base text-tx-primary font-sans overflow-hidden">
+      <Header onToggleTheme={toggleTheme} isDark={isDark} />
 
       <div className="flex-1 flex flex-col min-h-0">
         {/* Main Centered Content Wrapper */}
@@ -55,10 +70,10 @@ const App: React.FC = () => {
 
           {/* Title Section */}
           <div className={`pt-2 md:pt-10 pb-2 md:pb-6 shrink-0 text-left px-4 md:px-0 ${showCalculator ? 'hidden md:block' : 'block'}`}>
-            <h1 className="text-[1.75rem] md:text-[2.25rem] font-bold text-slate-200 tracking-[-0.02em] leading-[1.15] mb-0.5 md:mb-2">
-              Boligmarkedet i <span className="text-blue-500">{selectedDistrict?.name || 'Oslo'}</span>
+            <h1 className="text-[1.75rem] md:text-[2.25rem] font-bold text-tx-primary tracking-[-0.02em] leading-[1.15] mb-0.5 md:mb-2">
+              Boligmarkedet i <span className="text-accent">{selectedDistrict?.name || 'Oslo'}</span>
             </h1>
-            <p className="text-slate-400 font-normal text-[0.875rem] md:text-[0.9375rem] opacity-90 leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
+            <p className="text-tx-muted font-normal text-[0.875rem] md:text-[0.9375rem] opacity-90 leading-relaxed whitespace-nowrap overflow-hidden text-ellipsis">
               {selectedDistrict?.description || 'Er det kjøper eller selgers marked i Oslo nå?'}
             </p>
           </div>
@@ -68,7 +83,7 @@ const App: React.FC = () => {
 
             {/* Map Container — relative parent, map is absolute inset-0, stats overlay at bottom */}
             <div
-              className="lg:col-span-8 relative rounded-none md:rounded-[1rem] overflow-hidden bg-white md:bg-[#f1f5f9] shadow-2xl flex-1 min-h-0"
+              className="lg:col-span-8 relative rounded-none md:rounded-[1rem] overflow-hidden bg-elevated md:border md:border-br-default shadow-2xl flex-1 min-h-0"
             >
 
               {/* Map — fills entire container */}
@@ -81,6 +96,7 @@ const App: React.FC = () => {
                   selectedDistrict={selectedDistrict}
                   onPropertySelect={() => {}}
                   onDistrictSelect={handleDistrictSelect}
+                  isDark={isDark}
                 />
               </div>
 
@@ -88,13 +104,13 @@ const App: React.FC = () => {
               <div className="absolute top-1/2 -translate-y-1/2 right-4 z-[500] flex flex-col gap-2 pointer-events-auto">
                 <button
                   onClick={() => mapComponentRef.current?.zoomIn()}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[#1e293b] text-white shadow-lg hover:bg-blue-600 transition-all"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-surface text-white shadow-lg hover:bg-accent-hover transition-all"
                 >
                   <Plus size={14} />
                 </button>
                 <button
                   onClick={() => mapComponentRef.current?.zoomOut()}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[#1e293b] text-white shadow-lg hover:bg-blue-600 transition-all"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-surface text-white shadow-lg hover:bg-accent-hover transition-all"
                 >
                   <Minus size={14} />
                 </button>
@@ -102,13 +118,13 @@ const App: React.FC = () => {
                   <button
                     onClick={() => setIsLayerMenuOpen(!isLayerMenuOpen)}
                     className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all shadow-lg ${
-                      isLayerMenuOpen ? 'bg-blue-600 text-white' : 'bg-[#1e293b] text-white'
-                    } hover:bg-blue-600`}
+                      isLayerMenuOpen ? 'bg-accent text-white' : 'bg-surface text-white'
+                    } hover:bg-accent`}
                   >
                     <Layers size={14} />
                   </button>
                   {isLayerMenuOpen && (
-                    <div className="absolute right-full mr-2 top-0 rounded-lg shadow-xl overflow-hidden border bg-white border-slate-200" style={{ minWidth: '120px' }}>
+                    <div className="absolute right-full mr-2 top-0 rounded-lg shadow-xl overflow-hidden border bg-base border-br-subtle" style={{ minWidth: '120px' }}>
                       {(Object.keys(TILE_LAYERS) as TileLayerKey[]).map((key) => (
                         <button
                           key={key}
@@ -119,8 +135,8 @@ const App: React.FC = () => {
                           }}
                           className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[0.6875rem] font-semibold uppercase tracking-[0.08em] transition-colors ${
                             activeTileLayer === key
-                              ? 'bg-blue-600 text-white'
-                              : 'text-slate-700 hover:bg-slate-50'
+                              ? 'bg-accent text-white'
+                              : 'text-tx-muted hover:bg-elevated'
                           }`}
                         >
                           {TILE_LAYERS[key].name}
@@ -135,7 +151,7 @@ const App: React.FC = () => {
                     setSelectedDistrictId(null);
                     setIsExpanded(false);
                   }}
-                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[#1e293b] text-white shadow-lg hover:bg-blue-600 transition-all"
+                  className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-surface text-white shadow-lg hover:bg-accent-hover transition-all"
                 >
                   <Target size={14} />
                 </button>
@@ -149,7 +165,7 @@ const App: React.FC = () => {
                     <div className="flex justify-center mb-[-16px] md:mb-[-20px]">
                       <button
                         onClick={toggleExpand}
-                        className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 border-[3px] md:border-4 border-[#0a0f1d] rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-all shadow-2xl active:scale-90 group relative z-30"
+                        className="w-8 h-8 md:w-10 md:h-10 bg-accent border-[3px] md:border-4 border-base rounded-full flex items-center justify-center text-white hover:bg-accent-hover transition-all shadow-2xl active:scale-90 group relative z-30"
                       >
                         {isExpanded ? <ChevronDown className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-y-0.5 transition-transform" /> : <ChevronUp className="w-4 h-4 md:w-5 md:h-5 group-hover:-translate-y-0.5 transition-transform" />}
                       </button>
@@ -157,7 +173,7 @@ const App: React.FC = () => {
                   )}
 
                   <div className={`overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${getPanelHeightClass()} ${
-                    selectedDistrictId ? 'bg-[#0a0f1d]' : 'bg-white/50'
+                    selectedDistrictId ? 'bg-base' : ''
                   }`}>
                     {showCalculator && selectedDistrict ? (
                       <Calculator
@@ -179,7 +195,7 @@ const App: React.FC = () => {
 
             {/* Sidepanel — desktop only */}
             <div className="lg:col-span-4 hidden lg:flex flex-col">
-               <RightPanel className="h-full rounded-[1rem] border border-white/5 shadow-2xl overflow-hidden" />
+               <RightPanel className="h-full rounded-[1rem] border border-br-subtle shadow-2xl overflow-hidden" />
             </div>
           </div>
         </div>

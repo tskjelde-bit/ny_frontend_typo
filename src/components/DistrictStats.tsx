@@ -18,10 +18,10 @@ const capitalizeFirst = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
-// Fargekoding: grønn/gul/rød basert på markedsdata
-const GREEN = 'text-[#03d392]';
-const YELLOW = 'text-[#facc15]';
-const RED = 'text-[#e05a5a]';
+// Fargekoding: grønn/gul basert på markedsdata
+const GREEN = 'text-positive';
+const YELLOW = 'text-warning';
+const RED = 'text-negative';
 
 const getTrendColor = (val: number) => val >= 2.5 ? GREEN : val >= 1.5 ? YELLOW : RED;
 const getDaysColor = (val: number) => val <= 18 ? GREEN : val <= 24 ? YELLOW : RED;
@@ -118,7 +118,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
   };
 
   const compTexts = district ? getComparisonTexts(district) : null;
-  const osloTextColor = 'text-[#0b1018]';
+  const osloTextColor = 'text-tx-primary';
 
   if (!district) {
     return (
@@ -145,7 +145,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
   if (!isExpanded) {
     return (
       <div className="flex flex-col animate-in fade-in duration-300">
-        <div className="flex items-center py-3.5 md:py-4 px-4 md:px-10 border-b border-slate-800/10">
+        <div className="flex items-center py-3.5 md:py-4 px-4 md:px-10 border-b border-br-subtle">
            <div className="grid grid-cols-4 gap-2 md:gap-4 w-full max-w-7xl mx-auto">
               <StatItem label="Prisendring" value={`+${data.priceChange}%`} color={getTrendColor(data.priceChange)} small center />
               <StatItem
@@ -159,9 +159,9 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
               <StatItem label="Per M2" value={`${(data.pricePerSqm / 1000).toFixed(0)} K`} color={getSqmColor(data.pricePerSqm)} small center />
            </div>
         </div>
-        <button 
+        <button
           onClick={onOpenCalculator}
-          className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[0.8125rem] md:text-[1rem]"
+          className="w-full bg-accent hover:bg-accent-hover text-white font-bold py-4 transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[0.8125rem] md:text-[1rem]"
         >
           Hva er boligen din på {data.name} verdt?
         </button>
@@ -215,9 +215,9 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
         </div>
       </div>
 
-      <button 
+      <button
         onClick={onOpenCalculator}
-        className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 md:py-4 transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[0.8125rem] md:text-[1rem]"
+        className="w-full bg-accent hover:bg-accent-hover text-white font-bold py-4 md:py-4 transition-all active:scale-[0.99] shadow-[0_-10px_20px_rgba(37,99,235,0.2)] text-[0.8125rem] md:text-[1rem]"
       >
         Hva er boligen din på {data.name} verdt?
       </button>
@@ -225,7 +225,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
   );
 };
 
-const StatItem = ({ label, value, color, small, center, labelColor = "text-slate-500" }: { label: string, value: React.ReactNode, color: string, small?: boolean, center?: boolean, labelColor?: string }) => (
+const StatItem = ({ label, value, color, small, center, labelColor = "text-tx-dim" }: { label: string, value: React.ReactNode, color: string, small?: boolean, center?: boolean, labelColor?: string }) => (
   <div className={center ? 'text-center' : 'text-left'}>
     <div className={`${color} font-bold ${small ? 'text-[clamp(1.25rem,4vw,2rem)]' : 'text-2xl md:text-5xl'} tracking-[-0.03em] mb-0.5 md:mb-1 transition-colors duration-500`}>{value}</div>
     <div className={`${labelColor} text-[0.625rem] md:text-[0.6875rem] font-semibold tracking-[0.08em] leading-tight uppercase`}>{label}</div>
@@ -233,7 +233,7 @@ const StatItem = ({ label, value, color, small, center, labelColor = "text-slate
 );
 
 const StatBox = ({ title, mobileValue, desktopValue, colorClass, icon, desktopDesc, mobileDesc }: { title: string, mobileValue?: React.ReactNode, desktopValue?: React.ReactNode, colorClass: string, icon: React.ReactElement, desktopDesc: string, mobileDesc: string }) => (
-  <div className="bg-slate-900/40 rounded-[1rem] p-2 md:p-4 border border-white/5 hover:border-blue-500/20 transition-all group">
+  <div className="bg-surface rounded-[1rem] p-2 md:p-4 border border-br-subtle hover:border-accent/20 transition-all group">
     <div className="flex items-start justify-between mb-0 md:mb-3">
       {mobileValue && desktopValue ? (
         <>
@@ -248,12 +248,11 @@ const StatBox = ({ title, mobileValue, desktopValue, colorClass, icon, desktopDe
       </div>
     </div>
     <div className="space-y-0 md:space-y-1">
-      {/* Oppdatert label til uppercase og økt tracking */}
-      <h4 className="text-[0.625rem] md:text-[0.6875rem] font-semibold text-slate-500 tracking-[0.08em] uppercase">{title}</h4>
-      <p className="hidden md:block text-[0.8125rem] text-slate-400 leading-snug font-normal opacity-90 line-clamp-2">
+      <h4 className="text-[0.625rem] md:text-[0.6875rem] font-semibold text-tx-dim tracking-[0.08em] uppercase">{title}</h4>
+      <p className="hidden md:block text-[0.8125rem] text-tx-muted leading-snug font-normal opacity-90 line-clamp-2">
         {desktopDesc}
       </p>
-      <p className="block md:hidden text-[0.75rem] text-slate-400 leading-snug font-normal line-clamp-2">
+      <p className="block md:hidden text-[0.75rem] text-tx-muted leading-snug font-normal line-clamp-2">
         {mobileDesc}
       </p>
     </div>

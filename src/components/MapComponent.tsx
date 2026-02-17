@@ -39,6 +39,10 @@ export const TILE_LAYERS: Record<TileLayerKey, { name: string; url: string; opti
   },
 };
 
+// CartoDB tiles for automatic theme switching
+const CARTO_DARK_URL = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const CARTO_LIGHT_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+
 // Per-layer style config
 const LAYER_STYLES: Record<TileLayerKey, {
   showOverlay: boolean;          // show GeoJSON polygons (false = map style handles borders)
@@ -141,6 +145,7 @@ interface MapComponentProps {
   selectedDistrict: DistrictInfo | null;
   onPropertySelect: (p: Property) => void;
   onDistrictSelect: (d: DistrictInfo) => void;
+  isDark?: boolean;
 }
 
 const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
@@ -149,7 +154,8 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
   selectedProperty,
   selectedDistrict,
   onPropertySelect,
-  onDistrictSelect
+  onDistrictSelect,
+  isDark
 }, ref) => {
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -160,6 +166,7 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
   const dataLoadedRef = useRef(false);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
   const activeTileKeyRef = useRef<TileLayerKey>('blue');
+  const themeLayerRef = useRef<L.TileLayer | null>(null);
 
   // Stable refs for callbacks
   const districtsRef = useRef(districts);
@@ -348,6 +355,11 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
       if (tileLayerRef.current) {
         map.removeLayer(tileLayerRef.current);
       }
+      // Remove theme layer if present
+      if (themeLayerRef.current) {
+        map.removeLayer(themeLayerRef.current);
+        themeLayerRef.current = null;
+      }
       activeTileKeyRef.current = key;
       const def = TILE_LAYERS[key];
       tileLayerRef.current = L.tileLayer(def.url, def.options).addTo(map);
@@ -412,6 +424,42 @@ const MapComponent = forwardRef<MapComponentHandle, MapComponentProps>(({
       mapRef.current = null;
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Switch CartoDB tiles when isDark changes
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Remove previous theme layer if it exists
+    if (themeLayerRef.current) {
+      map.removeLayer(themeLayerRef.current);
+      themeLayerRef.current = null;
+    }
+
+    // Only apply CartoDB theme tiles when using 'blue' tile layer
+    // (other tile layers have their own styling)
+    const activeKey = activeTileKeyRef.current;
+    if (activeKey === 'blue') {
+      // Swap the main tile layer to CartoDB dark/light
+      if (tileLayerRef.current) {
+        map.removeLayer(tileLayerRef.current);
+      }
+      const url = isDark ? CARTO_DARK_URL : CARTO_LIGHT_URL;
+      tileLayerRef.current = L.tileLayer(url, { maxZoom: 19 }).addTo(map);
+
+      // Use dark styles for dark mode, blue styles for light mode
+      const styleKey: TileLayerKey = isDark ? 'dark' : 'blue';
+      activeTileKeyRef.current = styleKey;
+
+      if (dataLoadedRef.current) {
+        renderGeoJson();
+        renderLabels();
+      }
+
+      // Restore the key after rendering so the layer menu still works
+      activeTileKeyRef.current = activeKey;
+    }
+  }, [isDark, renderGeoJson, renderLabels]);
 
   // Re-render when selectedDistrict changes
   useEffect(() => {
