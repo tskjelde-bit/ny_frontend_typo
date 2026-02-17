@@ -9,8 +9,9 @@
 
 | Navn         | Størrelse        | Vekt | Letter-spacing | Case      | Bruk                                          |
 |--------------|------------------|------|----------------|-----------|-----------------------------------------------|
+| Hero         | 3rem (48px)      | 800  | -1px           | sentence  | Hero-overskrift (Montserrat font)             |
 | Display      | 3rem (48px)      | 700  | -0.03em        | sentence  | Kalkulator-resultat (pris)                    |
-| H1           | 2.25rem (36px)   | 700  | -0.02em        | sentence  | Hero-overskrift, kalkulator-tittel            |
+| H1           | 2.25rem (36px)   | 700  | -0.02em        | sentence  | Kalkulator-tittel, seksjons-overskrifter      |
 | Stat         | 2rem (32px)      | 700  | -0.03em        | —         | Stat-tall i kart (+2.4%, 5.8M, 19 dager)     |
 | H2           | 1.375rem (22px)  | 700  | -0.01em        | sentence  | Artikkel-titler, seksjons-overskrifter        |
 | H3           | 1.0625rem (17px) | 600  | normal         | sentence  | Kort-overskrifter, nyhetsbrev                 |
@@ -21,6 +22,19 @@
 | Label        | 0.6875rem (11px) | 600  | 0.08em         | UPPERCASE | Stat-labels, form-labels, badges, knapper     |
 | Micro        | 0.625rem (10px)  | 600  | 0.06em         | UPPERCASE | Sub-stat labels (PRIS/M², TREND) — kun i trange komponenter |
 
+## Font Pairing
+
+### Hero-overskrifter
+- Font: **Montserrat**
+- Weight: **800** (Extra Bold)
+- Letter-spacing: **-1px**
+- Bruk: Kun hero-overskrifter på landingssider og hovedseksjoner
+- Import: `@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');`
+
+### Body og UI
+- Font: **Inter** (fortsatt brukes for alt annet)
+- Se eksisterende type scale for detaljer
+
 ## Regler
 
 ### Uppercase
@@ -30,8 +44,9 @@
 - Riktig: `Boligpriser Oslo 2026–2028: Analyse av ferske prognoser`
 
 ### Font-weight
-- Kun 3 vekter: **400** (body/beskrivelser), **600** (labels/knapper), **700** (overskrifter/verdier)
-- Aldri bruk 300, 500, 800 eller 900
+- Kun 3 vekter for Inter: **400** (body/beskrivelser), **600** (labels/knapper), **700** (overskrifter/verdier)
+- Montserrat bruker **800** (Extra Bold) — kun for hero-overskrifter
+- Aldri bruk 300, 500 eller 900
 
 ### Letter-spacing
 - Positiv letter-spacing (0.06–0.1em) **kun** på UPPERCASE-tekst
@@ -66,19 +81,19 @@ Bruk `clamp()` for flytende skalering:
 
 ```css
 /* Eksempler */
+--font-hero: clamp(2rem, 5vw, 3rem);         /* 32px → 48px (Montserrat 800) */
 --font-stat: clamp(1.5rem, 3vw, 2rem);       /* 24px → 32px */
 --font-display: clamp(2.25rem, 5vw, 3rem);    /* 36px → 48px */
 --font-h1: clamp(1.75rem, 4vw, 2.25rem);      /* 28px → 36px */
 ```
 
-| Element           | Desktop          | Mobil            |
-|-------------------|------------------|------------------|
-| Stat-verdi        | 2rem (32px)      | 1.5rem (24px)    |
-| Stat-label        | 0.6875rem (11px) | 0.625rem (10px)  |
-| Stat-beskrivelse  | 0.8125rem (13px) | 0.75rem (12px)   |
-| Kalkulator-tittel | 2.25rem (36px)   | 1.75rem (28px)   |
-| Pris (resultat)   | 3rem (48px)      | 2.25rem (36px)   |
-| Form-labels       | 0.6875rem (11px) | 0.6875rem (11px) |
-| CTA-knapp         | 0.8125rem (13px) | 0.8125rem (13px) |
+| Element           | Desktop          | Mobil            | Font          |
+|-------------------|------------------|------------------|---------------|
+| Hero-overskrift   | 3rem (48px)      | 2rem (32px)      | Montserrat 800|
+| Stat-verdi        | 2rem (32px)      | 1.5rem (24px)    | Inter 700     |
+| Stat-label        | 0.6875rem (11px) | 0.625rem (10px)  | Inter 600     |
+| Stat-beskrivelse  | 0.8125rem (13px) | 0.75rem (12px)   | Inter 400     |
+| Kalkulator-tittel | 2.25rem (36px)   | 1.75rem (28px)   | Inter 700     |
+| Pris (resultat)   | 3rem (48px)      | 2.25rem (36px)   | Inter 700     |
 
 **Aldri forkort tekst for å spare plass** («19 D» i stedet for «19 dager»). Skalér størrelsen ned i stedet.

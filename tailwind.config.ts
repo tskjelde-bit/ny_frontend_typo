@@ -10,6 +10,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
+        hero: ['Montserrat', 'sans-serif'],
       },
       colors: {
         base: 'var(--bg-base)',
