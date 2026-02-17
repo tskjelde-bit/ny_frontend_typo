@@ -196,7 +196,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
 
                   <div className="w-full space-y-4 mb-2">
                     <div className="text-center">
-                      <h4 className="text-slate-200 font-bold text-[1.0625rem] md:text-[1.375rem] tracking-[-0.01em] leading-snug mb-1">Trenger du en verdivurdering?</h4>
+                      <h4 className="text-slate-200 font-bold text-[1rem] mb-1">Trenger du en verdivurdering?</h4>
                       <p className="text-slate-400 text-[0.8125rem] font-normal leading-relaxed max-w-[280px] mx-auto opacity-90 px-2">
                         Jeg hjelper deg med en kostnadsfri e-takst av boligen din
                       </p>
@@ -220,13 +220,13 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                 </div>
 
                 <div className="space-y-2 mt-auto">
-                  <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 uppercase tracking-[0.08em] text-[0.6875rem] transition-all shadow-xl shadow-emerald-900/20 active:scale-[0.98]">
+                  <button className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-4 rounded-xl flex items-center justify-center gap-2 uppercase tracking-[0.08em] text-[0.8125rem] transition-all shadow-xl shadow-emerald-900/20 active:scale-[0.98]">
                     Få en presis verdivurdering
                     <ArrowRight className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={handleReset}
-                    className="w-full text-slate-500 hover:text-white text-[0.6875rem] font-semibold uppercase tracking-[0.08em] flex items-center justify-center gap-2 py-1 transition-colors"
+                    className="w-full text-slate-500 hover:text-white text-[0.8125rem] font-normal flex items-center justify-center gap-2 py-1 transition-colors"
                   >
                     <ChevronLeft className="w-3 h-3" />
                     Endre detaljer

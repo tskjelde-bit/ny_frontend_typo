@@ -128,7 +128,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
             <StatItem label="Prisendring" value={`+${data.priceChange}%`} color={osloTextColor} labelColor={osloTextColor} center small />
             <StatItem
               label="Salgstid"
-              value={<>{data.avgDaysOnMarket} dager</>}
+              value={<>{data.avgDaysOnMarket} <span className="stat-unit-full">dager</span><span className="stat-unit-short">D</span></>}
               color={osloTextColor}
               labelColor={osloTextColor}
               center
@@ -150,7 +150,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
               <StatItem label="Prisendring" value={`+${data.priceChange}%`} color={getTrendColor(data.priceChange)} small center />
               <StatItem
                 label="Salgstid"
-                value={<>{data.avgDaysOnMarket} dager</>}
+                value={<>{data.avgDaysOnMarket} <span className="stat-unit-full">dager</span><span className="stat-unit-short">D</span></>}
                 color={getDaysColor(data.avgDaysOnMarket)}
                 small
                 center
@@ -185,7 +185,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
 
           <StatBox
             title="Salgstid"
-            mobileValue={<>{data.avgDaysOnMarket} dager</>}
+            mobileValue={<>{data.avgDaysOnMarket} <span className="stat-unit-full">dager</span><span className="stat-unit-short">D</span></>}
             desktopValue={<>{data.avgDaysOnMarket} dager</>}
             colorClass={getDaysColor(data.avgDaysOnMarket)}
             icon={<Clock />}
@@ -227,7 +227,7 @@ const DistrictStats: React.FC<DistrictStatsProps> = ({ district, isExpanded, onO
 
 const StatItem = ({ label, value, color, small, center, labelColor = "text-slate-500" }: { label: string, value: React.ReactNode, color: string, small?: boolean, center?: boolean, labelColor?: string }) => (
   <div className={center ? 'text-center' : 'text-left'}>
-    <div className={`${color} font-bold ${small ? 'text-[1.5rem] md:text-[2rem]' : 'text-2xl md:text-5xl'} tracking-[-0.03em] mb-0.5 md:mb-1 transition-colors duration-500`}>{value}</div>
+    <div className={`${color} font-bold ${small ? 'text-[clamp(1.25rem,4vw,2rem)]' : 'text-2xl md:text-5xl'} tracking-[-0.03em] mb-0.5 md:mb-1 transition-colors duration-500`}>{value}</div>
     <div className={`${labelColor} text-[0.625rem] md:text-[0.6875rem] font-semibold tracking-[0.08em] leading-tight uppercase`}>{label}</div>
   </div>
 );
@@ -237,11 +237,11 @@ const StatBox = ({ title, mobileValue, desktopValue, colorClass, icon, desktopDe
     <div className="flex items-start justify-between mb-0 md:mb-3">
       {mobileValue && desktopValue ? (
         <>
-          <div className={`${colorClass} font-bold text-[1.5rem] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500 md:hidden`}>{mobileValue}</div>
-          <div className={`${colorClass} font-bold text-[1.5rem] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500 hidden md:block`}>{desktopValue}</div>
+          <div className={`${colorClass} font-bold text-[clamp(1.25rem,4vw,2rem)] tracking-[-0.03em] transition-colors duration-500 md:hidden`}>{mobileValue}</div>
+          <div className={`${colorClass} font-bold text-[2rem] tracking-[-0.03em] transition-colors duration-500 hidden md:block`}>{desktopValue}</div>
         </>
       ) : (
-        <div className={`${colorClass} font-bold text-[1.5rem] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500`}>{mobileValue || desktopValue}</div>
+        <div className={`${colorClass} font-bold text-[clamp(1.25rem,4vw,2rem)] md:text-[2rem] tracking-[-0.03em] transition-colors duration-500`}>{mobileValue || desktopValue}</div>
       )}
       <div className={`${colorClass} opacity-70`}>
         {React.cloneElement(icon as React.ReactElement<any>, { size: 14, strokeWidth: 2.5 })}

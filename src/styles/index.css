@@ -15,6 +15,14 @@
   }
 }
 
+/* Stat unit: show "dager" by default, "D" on very narrow screens */
+.stat-unit-short { display: none; }
+.stat-unit-full { display: inline; }
+@media (max-width: 380px) {
+  .stat-unit-full { display: none; }
+  .stat-unit-short { display: inline; }
+}
+
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #1e293b; }
 ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
