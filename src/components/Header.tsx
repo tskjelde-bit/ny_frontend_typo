@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleTheme, isDark }) => {
   ];
 
   return (
-    <header className="bg-base border-b border-br-subtle sticky top-0 z-[100] h-[44px] md:h-[72px] flex items-center transition-all duration-300">
+    <header className="sticky top-0 z-[100] h-[44px] md:h-[72px] flex items-center transition-all duration-300">
       {/* Containeren har samme max-width som hovedinnholdet (1700px) og er sentrert */}
       <div className="w-full max-w-[1700px] mx-auto px-3 md:px-14 flex items-center justify-between h-full">
 
@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({ onToggleTheme, isDark }) => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="lg:hidden absolute top-[44px] left-0 w-full bg-base border-b border-br-subtle shadow-2xl animate-in slide-in-from-top duration-300">
+        <div className="lg:hidden absolute top-[44px] left-0 w-full backdrop-blur-xl bg-base/60 shadow-2xl animate-in slide-in-from-top duration-300">
           <nav className="flex flex-col p-6 space-y-4">
             {navLinks.map((link) => (
               <a

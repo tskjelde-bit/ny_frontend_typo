@@ -125,12 +125,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
   float r1 = rayStrength(finalRayPos, finalRayDir, coord, 36.2214, 21.11349, 1.5 * raysSpeed);
   float r2 = rayStrength(finalRayPos, finalRayDir, coord, 22.9921, 45.3948,  1.0 * raysSpeed);
   float r3 = rayStrength(finalRayPos, finalRayDir, coord, 14.0071, 18.0234,  1.1 * raysSpeed);
-  float totalRay  = clamp(r1 + r2 * 0.7 + r3 * 0.5, 0.0, 1.0);
+  float totalRay  = clamp(r1 * 0.6 + r2 * 0.3 + r3 * 0.15, 0.0, 1.0);
   float brightness = totalRay;
   vec3 col = mix(vec3(brightness), raysColor * brightness, saturation);
   col += raysColor * pow(totalRay, 3.0) * 0.4;
   vec3 finalColor = mix(col, raysColor * (0.5 + brightness * 0.5), 0.6);
-  float alpha = clamp(totalRay * 2.5, 0.0, 1.0);
+  float alpha = clamp(totalRay * 1.2, 0.0, 1.0);
   fragColor = vec4(finalColor * alpha, alpha);
 }
 void main() {

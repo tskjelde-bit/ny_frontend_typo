@@ -94,34 +94,38 @@ const App: React.FC = () => {
   return (
     <div className="flex flex-col h-[100dvh] w-full text-tx-primary font-sans overflow-hidden">
 
-      {/* Dark mode — blue rays */}
-      <div className="fixed inset-0 z-0 pointer-events-none hidden dark:block">
-        <PremiumBackground
-          raysOrigin="top-center"
-          raysColor="#60a5fa"
-          raysSpeed={1.2}
-          lightSpread={0.8}
-          rayLength={1.8}
-          followMouse={true}
-          mouseInfluence={0.08}
-          noiseAmount={0.05}
-          distortion={0.03}
-          fadeDistance={0.9}
-          saturation={0.85}
-          opacity={35}
+      {/* Dark mode only */}
+      <div className="fixed inset-0 -z-10 hidden dark:block pointer-events-none overflow-hidden">
+        {/* Base: almost black */}
+        <div className="absolute inset-0 bg-[rgb(5,5,5)]" />
+        {/* Single very subtle blue spotlight - narrow ellipse at top-center */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "radial-gradient(ellipse 20% 35% at 50% 0%, rgba(59, 130, 246, 0.18) 0%, transparent 100%)",
+          }}
         />
+        {/* WebGL rays - very subtle on top */}
+        <div className="absolute inset-0 opacity-[0.07]">
+          <PremiumBackground
+            raysOrigin="top-center"
+            raysColor="#60a5fa"
+            raysSpeed={1.2}
+            lightSpread={3.5}
+            rayLength={0.8}
+            followMouse={true}
+            mouseInfluence={0.03}
+            noiseAmount={0.01}
+            distortion={0.01}
+            fadeDistance={0.5}
+            saturation={1.0}
+            opacity={100}
+          />
+        </div>
       </div>
-
-      {/* Light mode — amber rays */}
-      <div className="fixed inset-0 z-0 pointer-events-none dark:hidden">
-        <PremiumBackground
-          raysOrigin="top-center"
-          raysColor="#fbbf24"
-          raysSpeed={0.5}
-          lightSpread={0.9}
-          saturation={0.5}
-          opacity={35}
-        />
+      {/* Light mode */}
+      <div className="fixed inset-0 -z-10 dark:hidden pointer-events-none">
+        <div className="absolute inset-0 bg-[rgb(250,251,254)]" />
       </div>
 
       {/* All page content above backgrounds */}

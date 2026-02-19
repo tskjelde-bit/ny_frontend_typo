@@ -5,7 +5,7 @@ export function useSanityQuery<T>(query: string, fallback: T): T {
   const [data, setData] = useState<T>(fallback);
 
   useEffect(() => {
-    if (!import.meta.env.VITE_SANITY_PROJECT_ID) return;
+    if (!sanityClient) return;
 
     sanityClient
       .fetch<T>(query)
