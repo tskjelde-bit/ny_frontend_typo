@@ -3,16 +3,17 @@
 
 import React, { useState } from 'react';
 import { DistrictInfo, BoligType, Standard } from '@/types';
-import { OSLO_DISTRICTS, BOLIGTYPE_FACTORS, STANDARD_FACTORS, getPreposisjon } from '@/constants';
+import { BOLIGTYPE_FACTORS, STANDARD_FACTORS, getPreposisjon } from '@/constants';
 import { X, Loader2, Sparkles, Home, Building2, Warehouse, DoorOpen, ArrowRight, TrendingUp, ChevronLeft, ChevronUp, ChevronDown } from 'lucide-react';
 
 interface CalculatorProps {
   district: DistrictInfo;
+  districts: DistrictInfo[];
   onDistrictChange: (id: string) => void;
   onClose: () => void;
 }
 
-const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onClose }) => {
+const Calculator: React.FC<CalculatorProps> = ({ district, districts, onDistrictChange, onClose }) => {
   const [type, setType] = useState<BoligType>(BoligType.LEILIGHET);
   const [area, setArea] = useState<number>(85);
   const [standard, setStandard] = useState<Standard>(Standard.STANDARD);
@@ -85,7 +86,7 @@ const Calculator: React.FC<CalculatorProps> = ({ district, onDistrictChange, onC
                       onChange={(e) => onDistrictChange(e.target.value)}
                       className="w-full bg-base border border-br-default rounded-xl px-3 py-2.5 text-accent font-bold appearance-none text-sm focus:ring-1 focus:ring-accent outline-none"
                     >
-                      {OSLO_DISTRICTS.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
+                      {districts.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-tx-dim">
                       <ChevronDown className="w-4 h-4" />

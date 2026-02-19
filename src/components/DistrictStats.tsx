@@ -3,7 +3,9 @@
 
 import React from 'react';
 import { DistrictInfo } from '@/types';
-import { CITY_AVERAGE, getPreposisjon } from '@/constants';
+import { getPreposisjon } from '@/constants';
+import { SanityCityAverages } from '@/lib/sanity/types';
+import { useCityAverages } from '@/hooks/useCityAverages';
 import { TrendingUp, Clock, BarChart3, Coins } from 'lucide-react';
 
 interface DistrictStatsProps {
@@ -29,9 +31,9 @@ const getSqmColor = (val: number) => val >= 110000 ? GREEN : val >= 75000 ? YELL
 const getMedianColor = (val: number) => val >= 7000000 ? GREEN : val >= 4500000 ? YELLOW : RED;
 
 // Logikk for generering av sammenligningstekster
-const getComparisonTexts = (district: DistrictInfo) => {
+const getComparisonTexts = (district: DistrictInfo, cityAverage: SanityCityAverages) => {
   // Prisutvikling (prosentpoeng)
-  const trendDiff = Number((district.priceChange - CITY_AVERAGE.priceTrend).toFixed(1));
+  const trendDiff = Number((district.priceChange - cityAverage.priceTrend).toFixed(1));
   const trendAbsDiff = Math.abs(trendDiff);
   const trendPrep = trendDiff > 0.1 ? "over" : trendDiff < -0.1 ? "under" : "på linje med";
   const trendInterp = trendDiff > 0.1

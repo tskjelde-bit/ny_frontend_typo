@@ -1,14 +1,17 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { OSLO_DISTRICTS, getPreposisjon } from '@/constants';
+import { getPreposisjon } from '@/constants';
 import { DistrictInfo } from '@/types';
+import { useDistricts } from '@/hooks/useDistricts';
 import MapComponent, { MapComponentHandle, TileLayerKey, TILE_LAYERS } from '@/components/MapComponent';
 import DistrictStats from '@/components/DistrictStats';
 import Calculator from '@/components/Calculator';
 import Header from '@/components/Header';
+import PremiumBackground from '@/components/PremiumBackground';
 import RightPanel from '@/components/RightPanel';
 import { ChevronDown, ChevronUp, Plus, Minus, Layers, Target } from 'lucide-react';
 
 const App: React.FC = () => {
+  const districts = useDistricts();
   const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(null);
   const [showCalculator, setShowCalculator] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
@@ -32,7 +35,7 @@ const App: React.FC = () => {
     });
   }, []);
 
-  const selectedDistrict = OSLO_DISTRICTS.find(d => d.id === selectedDistrictId) || null;
+  const selectedDistrict = districts.find(d => d.id === selectedDistrictId) || null;
 
   const fitHeroTitle = useCallback(() => {
     const el = heroTitleRef.current;
@@ -89,10 +92,43 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[100dvh] w-full bg-base text-tx-primary font-sans overflow-hidden">
-      <Header onToggleTheme={toggleTheme} isDark={isDark} />
+    <div className="flex flex-col h-[100dvh] w-full text-tx-primary font-sans overflow-hidden">
 
-      <div className="flex-1 flex flex-col min-h-0">
+      {/* Dark mode — blue rays */}
+      <div className="fixed inset-0 z-0 pointer-events-none hidden dark:block">
+        <PremiumBackground
+          raysOrigin="top-center"
+          raysColor="#60a5fa"
+          raysSpeed={1.2}
+          lightSpread={0.8}
+          rayLength={1.8}
+          followMouse={true}
+          mouseInfluence={0.08}
+          noiseAmount={0.05}
+          distortion={0.03}
+          fadeDistance={0.9}
+          saturation={0.85}
+          opacity={35}
+        />
+      </div>
+
+      {/* Light mode — amber rays */}
+      <div className="fixed inset-0 z-0 pointer-events-none dark:hidden">
+        <PremiumBackground
+          raysOrigin="top-center"
+          raysColor="#fbbf24"
+          raysSpeed={0.5}
+          lightSpread={0.9}
+          saturation={0.5}
+          opacity={35}
+        />
+      </div>
+
+      {/* All page content above backgrounds */}
+      <div className="relative z-10 flex flex-col flex-1 min-h-0">
+        <Header onToggleTheme={toggleTheme} isDark={isDark} />
+
+        <div className="flex-1 flex flex-col min-h-0">
         {/* Main Centered Content Wrapper */}
         <div className="w-full max-w-[1700px] flex flex-col px-0 md:px-14 mx-auto min-h-0 flex-1">
 
@@ -119,7 +155,7 @@ const App: React.FC = () => {
                 <MapComponent
                   ref={mapComponentRef}
                   properties={[]}
-                  districts={OSLO_DISTRICTS}
+                  districts={districts}
                   selectedProperty={null}
                   selectedDistrict={selectedDistrict}
                   onPropertySelect={() => {}}
@@ -206,6 +242,7 @@ const App: React.FC = () => {
                     {showCalculator && selectedDistrict ? (
                       <Calculator
                         district={selectedDistrict}
+                        districts={districts}
                         onDistrictChange={handleDistrictChangeById}
                         onClose={() => setShowCalculator(false)}
                       />
@@ -227,6 +264,7 @@ const App: React.FC = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
